@@ -6,19 +6,19 @@ import { useState, useEffect } from "react";
 import { signIn, useSession, getProviders, signOut } from "next-auth/react";
 
 const Nav = () => {
-  const isUserLoggedIn = true;
+  const { data: session } = useSession();
   const [toggleDropdown, setToggleDropdown] = useState(false);
   const [providers, setProviders] = useState(null);
 
-  // useEffect(() => {
-  //   const setProviders = async () => {
-  //     const response = await getProviders();
+  useEffect(() => {
+    const setUpProviders = async () => {
+      const response = await getProviders();
 
-  //     setProviders(response);
-  //   };
+      setProviders(response);
+    };
 
-  //   setProviders();
-  // }, []);
+    setUpProviders();
+  }, []);
 
   return (
     <nav className="flex-between w-full mb-16 pt-3">
@@ -34,7 +34,7 @@ const Nav = () => {
 
       {/* Desktop Navigation */}
       <div className="sm:flex hidden">
-        {isUserLoggedIn ? (
+        {session?.user ? (
           <div className="flex gap-3 md:gap-5">
             <Link href="/create-prompt" className="black_btn">
               Create Post
@@ -46,7 +46,7 @@ const Nav = () => {
 
             <Link href="/profile">
               <Image
-                src="/assets/images/logo.svg"
+                src={session?.user.image}
                 alt="profile"
                 width={37}
                 height={37}
@@ -75,14 +75,14 @@ const Nav = () => {
 
       {/* Mobile Navigation */}
       <div className="sm:hidden flex relative">
-        {isUserLoggedIn ? (
+        {session?.user ? (
           <div className="flex">
             <Image
-              src="/assets/images/logo.svg"
+              src={session?.user.image}
               alt="profile"
               width={37}
               height={37}
-              className="rounded-full"
+              className="rounded-full cursor-pointer hover:scale-105"
               onClick={() => setToggleDropdown((prev) => !prev)}
             />
             {toggleDropdown && (
@@ -96,7 +96,7 @@ const Nav = () => {
                     My Profile
                   </Link>
                   <Link
-                    href="/profile"
+                    href="/create-prompt"
                     className="dropdown-link"
                     onClick={() => setToggleDropdown(false)}
                   >
